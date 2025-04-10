@@ -1,6 +1,7 @@
 # 💼 Worker Contracts Java
 
 Hands-on Java project using OOP to manage worker data, contracts, and monthly earnings.
+
 Sistema de gerenciamento de contratos de trabalho para um funcionário de um departamento. É possível cadastrar contratos por hora e calcular a renda total do trabalhador em um determinado mês.
 
 ## 🛠️ Funcionalidades
