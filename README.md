@@ -1,249 +1,223 @@
-# 🚀 HR Management System - Enterprise Contract & Employee Manager
+# 🚀 HR Management System
 
 <div align="center">
 
 ![Java](https://img.shields.io/badge/Java-17+-blue?style=for-the-badge&logo=java)
-![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-green?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen?style=for-the-badge)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen?style=for-the-badge&logo=spring-boot)
+![Architecture](https://img.shields.io/badge/Architecture-Layered-green?style=for-the-badge)
+![Database](https://img.shields.io/badge/Database-PostgreSQL%2FH2-blue?style=for-the-badge&logo=postgresql)
 
-**A robust, scalable, and enterprise-grade Human Resources Management System built with Clean Architecture principles.**
+**Sistema de Gestão de Recursos Humanos com Spring Boot 3 e API REST**
 
-[Features](#-features) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [Usage](#-usage) • [Business Rules](#-business-rules)
+[Visão Geral](#-visão-geral) • [Tecnologias](#-tecnologias) • [Como Rodar](#-como-rodar) • [API Endpoints](#-api-endpoints) • [Configuração](#-configuração)
 
 </div>
 
 ---
 
-## 🎯 Overview
+## 🎯 Visão Geral
 
-This **HR Management System** is a comprehensive solution designed to manage employees, contracts, and organizational workflows with strict adherence to business rules and data integrity. Built using **Clean Architecture** principles, it ensures separation of concerns, testability, and maintainability.
+O **HR Management System** é uma API REST completa para gestão de funcionários e contratos de trabalho. Desenvolvido com Spring Boot 3, o sistema oferece endpoints seguros com autenticação JWT, validações de negócio e migrações de banco de dados versionadas com Flyway.
 
-The system handles the complete lifecycle of employee management—from onboarding and contract creation to termination and historical reporting—while enforcing critical validations such as CPF uniqueness, email format, age restrictions, and single active contract per employee.
+### Funcionalidades Principais
 
----
-
-## ✨ Features
-
-### 👥 Employee Management Module
-- **Full CRUD Operations**: Create, Read, Update, and Soft-Delete employees
-- **Advanced Validation**: CPF validation (format + uniqueness), Email format, Minimum age (≥ 16 years)
-- **Smart Search**: Find employees by ID or CPF
-- **Status Management**: Active/Inactive tracking with soft delete pattern
-- **Address Management**: Complete address structure (Street, City, State, ZIP, Country)
-
-### 📄 Contract Management Module
-- **Multiple Contract Types**: CLT, PJ (Contractor), Temporary, Internship
-- **Contract Lifecycle**: Creation, modification, and termination workflows
-- **Business Rule Enforcement**: Only 1 active contract per employee, Cannot create contracts for inactive employees
-- **Rich Contract Terms**: Benefits, bonus policies, vacation days, termination clauses
-- **Financial Tracking**: Salary, currency, weekly workload management
-
-### 📊 Dashboard & Analytics
-- **Real-time Metrics**: Total employees (Active vs Inactive), Contract statistics (Active, Expired, Expiring Soon)
-- **Quick Insights**: At-a-glance organizational health indicators
-
-### 📑 Reporting System
-- **Pre-built Reports**: Active employees list, Active contracts overview, Employee contract history, Payroll summary
-- **Filter Capabilities**: By status, type, date ranges
-
-### 🔒 Data Integrity & Security
-- **UUID-based ID Generation**: Secure, unique identifiers
-- **Soft Delete Pattern**: Data retention for audit trails
-- **Immutable Historical Records**: Prevents data tampering
+- 👥 **Gestão de Funcionários**: CRUD completo com validações (CPF, email, idade mínima)
+- 📄 **Gestão de Contratos**: Múltiplos tipos (CLT, PJ, Temporário, Estágio)
+- 🔐 **Autenticação JWT**: Login seguro com refresh token
+- 📊 **Dashboard**: Métricas em tempo real
+- 🗄️ **Migrações**: Scripts Flyway versionados
 
 ---
 
-## 🏗️ Architecture
+## 🛠️ Tecnologias Utilizadas
 
-This project follows **Clean Architecture** principles with clear separation of concerns:
-
-```
-┌─────────────────────────────────────────────────┐
-│              APPLICATION LAYER                  │
-│  (Main Menu, User Input/Output Handling)        │
-└─────────────────────────────────────────────────┘
-                      ↓
-┌─────────────────────────────────────────────────┐
-│              CONTROLLER LAYER                   │
-│  (Request Validation, Response Formatting)      │
-└─────────────────────────────────────────────────┘
-                      ↓
-┌─────────────────────────────────────────────────┐
-│               SERVICE LAYER                     │
-│  (Business Logic, Rules Enforcement)            │
-└─────────────────────────────────────────────────┘
-                      ↓
-┌─────────────────────────────────────────────────┐
-│             REPOSITORY LAYER                    │
-│  (Data Access, In-Memory Storage)               │
-└─────────────────────────────────────────────────┘
-                      ↓
-┌─────────────────────────────────────────────────┐
-│               DOMAIN LAYER                      │
-│  (Entities, Enums, Validators, Core Models)     │
-└─────────────────────────────────────────────────┘
-```
-
-| Layer | Responsibility |
-|-------|---------------|
-| **Application** | Main entry point, menu navigation, user interaction |
-| **Controller** | Input validation, orchestrates service calls, formats output |
-| **Service** | Implements business rules, validates operations, manages workflows |
-| **Repository** | Data persistence (in-memory), CRUD operations |
-| **Domain** | Core entities, enums, validators, business objects |
+| Tecnologia | Versão | Descrição |
+|------------|--------|-----------|
+| Java | 17+ | Linguagem principal |
+| Spring Boot | 3.2.0 | Framework principal |
+| Spring Security | 6.x | Autenticação e autorização |
+| Spring Data JPA | 3.x | Persistência de dados |
+| Flyway | 9.x | Migrações de banco de dados |
+| JWT | 0.11.5 | Tokens de autenticação |
+| H2 Database | - | Banco em memória (dev) |
+| PostgreSQL | - | Banco de dados (prod) |
+| Maven | 3.x | Gerenciador de dependências |
 
 ---
 
-## 🛠️ Tech Stack
+## 🚀 Como Rodar
 
-- **Language**: Java 17+
-- **Architecture**: Clean Architecture / Hexagonal Architecture
-- **Design Patterns**: Repository Pattern, Service Layer, Factory Pattern (UUID)
-- **Validation**: Custom validators for CPF, Email, Dates, Business Rules
-- **Build Tool**: Manual compilation (javac) or Maven/Gradle ready
+### Pré-requisitos
 
----
+- JDK 17 ou superior
+- Maven 3.6+
+- PostgreSQL (para produção) ou H2 (desenvolvimento)
 
-## 🚀 Getting Started
-
-### Prerequisites
-- Java Development Kit (JDK) 17 or higher
-- Git
-
-### Installation
+### Opção 1: Rodar com Maven (Recomendado para desenvolvimento)
 
 ```bash
-# Clone the repository
-git clone https://github.com/YOUR_USERNAME/hr-management-system.git
+# Clone o repositório
+git clone <URL_DO_REPOSITORIO>
 cd hr-management-system
 
-# Compile all source files
-mkdir -p bin
-javac -d bin $(find src -name "*.java")
+# Compile o projeto
+mvn clean install
 
-# Run the application
-java -cp bin application.Main
+# Rode a aplicação (usando H2 em memória)
+mvn spring-boot:run
+```
+
+A aplicação estará disponível em: `http://localhost:8080`
+
+### Opção 2: Rodar via Docker (Se disponível)
+
+```bash
+# Build da imagem Docker
+docker build -t hrms .
+
+# Rodar o container
+docker run -p 8080:8080 hrms
+```
+
+### Opção 3: Executar JAR compilado
+
+```bash
+# Compile o projeto
+mvn clean package
+
+# Execute o JAR
+java -jar target/hr-management-system-1.0.0.jar
 ```
 
 ---
 
-## 💻 Usage
+## ⚙️ Configuração
 
-Upon running, you'll see the **Main Menu**:
+### Perfis Disponíveis
 
+O projeto possui dois perfis de configuração:
+
+| Profile | Banco de Dados | Uso |
+|---------|----------------|-----|
+| `dev` | H2 (em memória) | Desenvolvimento local |
+| `prod` | PostgreSQL | Produção |
+
+### Variáveis de Ambiente (Produção)
+
+Para rodar em produção, configure as seguintes variáveis de ambiente:
+
+```bash
+# Perfil
+export SPRING_PROFILES_ACTIVE=prod
+
+# Database
+export DATABASE_URL=jdbc:postgresql://localhost:5432/hrdb
+export DATABASE_USERNAME=seu_usuario
+export DATABASE_PASSWORD=sua_senha
+
+# JWT (mínimo 32 caracteres)
+export JWT_SECRET=$(openssl rand -base64 32)
+
+# CORS
+export CORS_ALLOWED_ORIGINS=https://app.seudominio.com
+
+# Senhas dos usuários
+export ADMIN_DEFAULT_PASSWORD=sua_senha_admin
 ```
-========================================
-    HR MANAGEMENT SYSTEM - MAIN MENU
-========================================
-1. Manage Employees
-2. Manage Contracts
-3. Dashboard (Overview)
-4. Reports
-5. Exit
-========================================
+
+### Rodando com profile dev (padrão)
+
+```bash
+# Sem necessidade de configuração adicional
+mvn spring-boot:run
 ```
-
-### Employee Management
-- Register, List, Search, Update, Deactivate employees
-- Validates CPF uniqueness, email format, minimum age (≥16)
-- Auto-generates UUID, manages ACTIVE/INACTIVE status
-
-### Contract Management
-- Create, List, Search, Update, Terminate contracts
-- Types: CLT, PJ, TEMPORARY, INTERNSHIP
-- Ensures only 1 active contract per employee
-- Blocks contracts for inactive employees
-
-### Dashboard
-Real-time metrics: Total employees, Active/Inactive counts, Contract statistics
-
-### Reports
-Generate filtered lists: Active employees, Active contracts, Employee history, Payroll summary
 
 ---
 
-## 📜 Business Rules
+## 📡 API Endpoints
 
-### Employee Rules
-| Rule | Description |
-|------|-------------|
-| **CPF Uniqueness** | CPF must be unique across all employees |
-| **Email Format** | Must contain "@" symbol |
-| **Minimum Age** | Employee must be ≥ 16 years old |
-| **Soft Delete** | Employees are never deleted, only deactivated |
+### Autenticação
 
-### Contract Rules
-| Rule | Description |
-|------|-------------|
-| **Single Active Contract** | An employee can have only ONE active contract at a time |
-| **Employee Status Check** | Cannot create contracts for INACTIVE employees |
-| **No Hard Deletes** | Contracts are never removed from the system |
-| **Irreversible Termination** | Once terminated, a contract cannot be reactivated |
-| **Salary Validation** | Salary must be > 0 |
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/api/auth/login` | Realizar login |
+| POST | `/api/auth/refresh` | Refresh token |
+
+### Funcionários
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/employees` | Listar funcionários |
+| GET | `/api/employees/{id}` | Buscar funcionário por ID |
+| POST | `/api/employees` | Criar funcionário |
+| PUT | `/api/employees/{id}` | Atualizar funcionário |
+| DELETE | `/api/employees/{id}` | Inativar funcionário |
+
+### Contratos
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/contracts` | Listar contratos |
+| GET | `/api/contracts/{id}` | Buscar contrato por ID |
+| POST | `/api/contracts` | Criar contrato |
+| PUT | `/api/contracts/{id}` | Atualizar contrato |
+| DELETE | `/api/contracts/{id}` | Terminar contrato |
 
 ---
 
-## 📁 Project Structure
+## 📁 Estrutura do Projeto
 
 ```
 hr-management-system/
-├── src/
-│   ├── application/          # Main.java (entry point)
-│   ├── controller/           # EmployeeController, ContractController
-│   ├── service/              # EmployeeService, ContractService
-│   ├── repository/           # EmployeeRepository, ContractRepository
-│   └── domain/
-│       ├── entities/         # Employee, Contract, Address, ContractTerms
-│       ├── enums/            # EmployeeStatus, ContractStatus, ContractType
-│       └── validators/       # CPFValidator, EmailValidator, DateValidator
-├── bin/                      # Compiled classes
+├── src/main/java/com/hrms/
+│   ├── config/           # Configurações (Security, JWT, CORS)
+│   ├── controller/       # Controllers REST
+│   ├── domain/
+│   │   ├── entity/       # Entidades JPA
+│   │   └── enums/        # Enumerações
+│   ├── dto/              # Data Transfer Objects
+│   ├── exception/        # Exception handlers
+│   ├── repository/       # Repositórios JPA
+│   └── service/          # Services com regras de negócio
+├── src/main/resources/
+│   ├── db/migration/     # Scripts Flyway
+│   ├── application.yml   # Configuração dev
+│   └── application-prod.yml # Configuração prod
+├── pom.xml
 └── README.md
 ```
 
 ---
 
-## 🔮 Future Enhancements
+## 🗄️ Banco de Dados
 
-- [ ] Database Integration (PostgreSQL/MySQL)
-- [ ] REST API with Spring Boot
-- [ ] Authentication & Authorization
-- [ ] PDF/CSV Export
-- [ ] Unit Tests (JUnit 5)
-- [ ] Docker Support
-- [ ] Frontend UI (React/Angular)
+O projeto utiliza **Flyway** para versionamento do schema do banco de dados. Os scripts estão em `src/main/resources/db/migration/`:
+
+- `V1__initial_schema.sql` - Criação das tabelas
+- `V2__seed_initial_data.sql` - Dados iniciais
 
 ---
 
-## 🤝 Contributing
+## 🔒 Segurança
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-MIT License - feel free to use this project for learning or production.
+- **JWT** para autenticação stateless
+- **BCrypt** para hash de senhas
+- **Rate limiting** para previnir força bruta
+- **CORS** configurável por ambiente
+- **Senhas e secrets** via variáveis de ambiente
 
 ---
 
-## 👨‍💻 Author
+## 📝 Licença
 
-**Your Name**  
-*Software Engineer | Java Specialist | Clean Architecture Enthusiast*
-
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your Profile](https://linkedin.com/in/yourprofile)
+MIT License - veja o arquivo LICENSE para detalhes.
 
 ---
 
 <div align="center">
 
-**⭐ If you found this project helpful, please give it a star!**
+**⭐ Se este projeto foi útil, deixe uma estrela!**
 
-*Built with ❤️ using Java and Clean Architecture principles*
+*Desenvolvido com ❤️ usando Spring Boot 3*
 
 </div>
