@@ -1,47 +1,27 @@
---- src/main/resources/logback-spring.xml (原始)
-
-
-+++ src/main/resources/logback-spring.xml (修改后)
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true">
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
     <springProperty scope="context" name="appName" source="spring.application.name" defaultValue="hrms"/>
 
-    <!-- Console Appender with JSON format -->
+    <!-- Console Appender -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"application":"${appName}","environment":"${spring.profiles.active:-dev}"}</customFields>
-            <includeMdc>true</includeMdc>
-            <includeCallerData>true</includeCallerData>
-            <fieldNames>
-                <timestamp>timestamp</timestamp>
-                <level>level</level>
-                <message>message</message>
-                <logger>logger</logger>
-                <thread>thread</thread>
-                <stackTrace>stack_trace</stackTrace>
-            </fieldNames>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- File Appender with JSON format -->
+    <!-- File Appender -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/hrms.log</file>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"application":"${appName}"}</customFields>
-            <includeMdc>true</includeMdc>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/hrms.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
     </appender>
-
-    <!-- MDC Filter for Correlation ID -->
-    <turboFilter class="ch.qos.logback.classic.turbo.MDCTurboFilter">
-        <MDCKey>correlationId</MDCKey>
-    </turboFilter>
 
     <!-- Root Logger -->
     <root level="INFO">

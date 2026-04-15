@@ -1,6 +1,7 @@
 package com.hrms.dto;
 
 import lombok.*;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -13,4 +14,15 @@ public class LoginResponse {
     private String username;
     private String role;
     private long expiresIn;
+    
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class UserInfo {
+        private UUID id;
+        private String username;
+        private String email;
+        private String role;
+    }
 }
