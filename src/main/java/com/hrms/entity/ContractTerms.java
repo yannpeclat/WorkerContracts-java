@@ -1,7 +1,3 @@
---- src/main/java/com/hrms/entity/ContractTerms.java (原始)
-
-
-+++ src/main/java/com/hrms/entity/ContractTerms.java (修改后)
 package com.hrms.entity;
 
 import jakarta.persistence.*;
@@ -28,7 +24,7 @@ public class ContractTerms {
     @Column(name = "term_type", nullable = false, length = 50)
     private String termType;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
     @Column(precision = 15, scale = 2)

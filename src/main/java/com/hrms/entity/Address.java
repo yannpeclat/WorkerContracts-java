@@ -1,7 +1,3 @@
---- src/main/java/com/hrms/entity/Address.java (原始)
-
-
-+++ src/main/java/com/hrms/entity/Address.java (修改后)
 package com.hrms.entity;
 
 import jakarta.persistence.*;

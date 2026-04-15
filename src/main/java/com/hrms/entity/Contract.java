@@ -1,7 +1,3 @@
---- src/main/java/com/hrms/entity/Contract.java (原始)
-
-
-+++ src/main/java/com/hrms/entity/Contract.java (修改后)
 package com.hrms.entity;
 
 import jakarta.persistence.*;
@@ -34,7 +30,8 @@ public class Contract {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "contract_type", nullable = false, length = 50)
-    private ContractType contractType;
+    @Builder.Default
+    private ContractType contractType = ContractType.CLT;
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
@@ -50,7 +47,7 @@ public class Contract {
     private String currency = "BRL";
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     @Builder.Default
     private ContractStatus status = ContractStatus.DRAFT;
 
@@ -59,7 +56,7 @@ public class Contract {
 
     @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<ContractTerms> contractTermsList = new ArrayList<>();
+    private List<ContractTerms> termsList = new ArrayList<>();
 
     @Column(name = "created_at", updatable = false)
     @Builder.Default
@@ -75,12 +72,5 @@ public class Contract {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = Instant.now();
-    }
-
-    public void softDelete() {
-        this.deletedAt = Instant.now();
-        if (this.status == ContractStatus.ACTIVE) {
-            this.status = ContractStatus.TERMINATED;
-        }
     }
 }

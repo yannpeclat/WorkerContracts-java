@@ -1,12 +1,6 @@
---- src/main/java/com/hrms/dto/AddressResponse.java (原始)
-
-
-+++ src/main/java/com/hrms/dto/AddressResponse.java (修改后)
 package com.hrms.dto;
 
 import lombok.*;
-import java.time.Instant;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -14,7 +8,7 @@ import java.util.UUID;
 @Builder
 public class AddressResponse {
 
-    private UUID id;
+    private java.util.UUID id;
     private String street;
     private String number;
     private String complement;
@@ -23,5 +17,4 @@ public class AddressResponse {
     private String state;
     private String zipCode;
     private String country;
-    private Instant createdAt;
 }
