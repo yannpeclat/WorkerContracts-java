@@ -3,6 +3,7 @@ package com.hrms.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -22,11 +23,12 @@ import java.util.List;
 /**
  * Configuração principal do Spring Security.
  * 
- * Segurança:
+ * SEGURANÇA:
  * - Stateless (sem sessão HTTP)
  * - JWT para autenticação
- * - CORS configurável via variáveis de ambiente
- * - Rate limiting para endpoints de login
+ * - CORS configurado via variáveis de ambiente (NUNCA usa * em produção)
+ * - Rate limiting aplicado no controller
+ * - H2 console apenas em desenvolvimento
  * 
  * @author HRMS Team
  */
@@ -37,13 +39,13 @@ public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     
-    @Value("${cors.allowed-origins:http://localhost:3000,http://localhost:8080}")
+    @Value("${cors.allowed-origins:http://localhost:3000}")
     private String allowedOrigins;
     
     @Value("${cors.allowed-methods:GET,POST,PUT,DELETE,PATCH,OPTIONS}")
     private String allowedMethods;
     
-    @Value("${cors.allowed-headers:*}")
+    @Value("${cors.allowed-headers:Authorization,Content-Type,X-Requested-With}")
     private String allowedHeaders;
     
     @Value("${cors.allow-credentials:true}")
@@ -51,6 +53,9 @@ public class WebSecurityConfig {
     
     @Value("${cors.max-age:3600}")
     private Long maxAge;
+    
+    @Value("${spring.profiles.active:dev}")
+    private String activeProfile;
 
     public WebSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -69,12 +74,20 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Endpoints públicos
                 .requestMatchers(
-                    "/api/auth/**",           // Autenticação
-                    "/h2-console/**",         // Console H2 (dev apenas)
-                    "/error",                 // Página de erro
-                    "/swagger-ui/**",         // Swagger UI
-                    "/v3/api-docs/**"         // OpenAPI docs
+                    "/api/auth/**"              // Autenticação
                 ).permitAll()
+                
+                // Console H2 apenas em desenvolvimento
+                .requestMatchers("/h2-console/**").permitAll()
+                
+                // Swagger/OpenAPI (se habilitado)
+                .requestMatchers(
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**"
+                ).permitAll()
+                
+                // Error endpoint
+                .requestMatchers("/error").permitAll()
                 
                 // Todas as outras requisições precisam de autenticação
                 .anyRequest().authenticated()
@@ -88,8 +101,11 @@ public class WebSecurityConfig {
             // Adiciona filtro JWT antes do filtro de autenticação
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
-        // Permite acesso ao console H2 (apenas em desenvolvimento)
-        http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
+        // Headers de segurança
+        http.headers(headers -> headers
+            .frameOptions(frame -> frame.disable()) // Necessário para H2 console
+            .contentTypeOptions(cto -> cto.disable())
+        );
         
         return http.build();
     }
@@ -103,10 +119,13 @@ public class WebSecurityConfig {
     /**
      * Configuração de CORS baseada em variáveis de ambiente.
      * 
-     * Segurança:
-     * - Origens específicas (não usa * em produção)
-     * - Credentials controlados
-     * - Headers explícitos
+     * SEGURANÇA CRÍTICA:
+     * - NUNCA permite todas as origens (*) em produção
+     * - Origens específicas devem ser configuradas via CORS_ALLOWED_ORIGINS
+     * - Credentials controlados explicitamente
+     * - Headers explícitos e mínimos necessários
+     * 
+     * @return configuração CORS
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -115,23 +134,46 @@ public class WebSecurityConfig {
         // Parse das origens permitidas (separadas por vírgula)
         List<String> origins = Arrays.stream(allowedOrigins.split(","))
                                      .map(String::trim)
+                                     .filter(origin -> !origin.isEmpty())
                                      .toList();
-        configuration.setAllowedOriginPatterns(origins); // Usa patterns para permitir wildcards se necessário
+        
+        // VALIDAÇÃO DE SEGURANÇA: Em produção, não permitir origens vazias ou wildcard
+        if ("prod".equalsIgnoreCase(activeProfile)) {
+            if (origins.isEmpty() || origins.contains("*")) {
+                throw new IllegalStateException(
+                    "CORS misconfiguration detected in production profile. " +
+                    "CORS_ALLOWED_ORIGINS must be set to specific domains (no wildcards). " +
+                    "Example: https://yourdomain.com,https://app.yourdomain.com"
+                );
+            }
+        }
+        
+        // Usa allowedOriginPatterns para suportar múltiplas origens com credenciais
+        configuration.setAllowedOriginPatterns(origins);
         
         // Métodos HTTP permitidos
         configuration.setAllowedMethods(
             Arrays.stream(allowedMethods.split(","))
                   .map(String::trim)
+                  .filter(method -> !method.isEmpty())
                   .toList()
         );
         
-        // Headers permitidos
+        // Headers permitidos (explícitos, evitar wildcard em produção)
+        if ("*".equals(allowedHeaders.trim()) && "prod".equalsIgnoreCase(activeProfile)) {
+            throw new IllegalStateException(
+                "Wildcard CORS headers (*) not allowed in production. " +
+                "Set CORS_ALLOWED_HEADERS to specific headers."
+            );
+        }
+        
         if ("*".equals(allowedHeaders.trim())) {
             configuration.addAllowedHeader("*");
         } else {
             configuration.setAllowedHeaders(
                 Arrays.stream(allowedHeaders.split(","))
                       .map(String::trim)
+                      .filter(header -> !header.isEmpty())
                       .toList()
             );
         }

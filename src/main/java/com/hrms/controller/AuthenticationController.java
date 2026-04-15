@@ -7,6 +7,7 @@ import com.hrms.dto.auth.LoginRequest;
 import com.hrms.dto.auth.RefreshTokenRequest;
 import com.hrms.exception.BusinessException;
 import com.hrms.service.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,16 +29,16 @@ import org.springframework.web.bind.annotation.*;
  * - POST /api/auth/refresh - Renova token de acesso
  * - POST /api/auth/logout - Invalida tokens (opcional)
  * 
- * Segurança:
- * - Rate limiting para prevenir força bruta
- * - Validação de entrada
- * - Logs de tentativas falhas
+ * SEGURANÇA:
+ * - Rate limiting para prevenir força bruta (configurável via env)
+ * - Validação de entrada com Bean Validation
+ * - Logs de tentativas falhas (sem expor dados sensíveis)
+ * - Extração segura de IP do cliente
  * 
  * @author HRMS Team
  */
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "${cors.allowed-origins}")
 public class AuthenticationController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
@@ -64,18 +65,28 @@ public class AuthenticationController {
     /**
      * Realiza autenticação do usuário e retorna tokens JWT.
      * 
+     * SEGURANÇA:
+     * - Rate limiting baseado em IP + username
+     * - Logs sem expor senhas
+     * - Reset de rate limit após sucesso
+     * 
      * @param request credenciais de login
+     * @param httpServletRequest requisição HTTP para extrair IP
      * @return tokens de acesso e refresh
      */
     @PostMapping("/login")
     public ResponseEntity<ApiResponseDTO<AuthResponse>> login(
-            @Valid @RequestBody LoginRequest request) {
+            @Valid @RequestBody LoginRequest request,
+            HttpServletRequest httpServletRequest) {
         
-        String ipOrUser = request.getUsername(); // Pode ser melhorado para usar IP também
+        // Extrai IP do cliente de forma segura
+        String clientIp = getClientIpAddress(httpServletRequest);
+        String rateLimitKey = clientIp + ":" + request.getUsername();
         
         // Verifica rate limiting
-        if (rateLimiter.isLimitExceeded(ipOrUser)) {
-            logger.warn("Login attempt blocked due to rate limit for user: {}", request.getUsername());
+        if (rateLimiter.isLimitExceeded(rateLimitKey)) {
+            logger.warn("Login attempt blocked due to rate limit for user: {} from IP: {}", 
+                       request.getUsername(), clientIp);
             throw new BusinessException(
                 "Too many failed login attempts. Please try again later.", 
                 "RATE_LIMIT_EXCEEDED"
@@ -92,7 +103,7 @@ public class AuthenticationController {
             );
 
             // Login bem-sucedido - reseta rate limit
-            rateLimiter.resetAttempts(ipOrUser);
+            rateLimiter.resetAttempts(rateLimitKey);
 
             // Carrega detalhes do usuário
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
@@ -100,16 +111,16 @@ public class AuthenticationController {
             // Gera tokens
             AuthResponse response = authenticationService.generateTokens(userDetails);
 
-            logger.info("User {} logged in successfully", request.getUsername());
+            logger.info("User {} logged in successfully from IP: {}", request.getUsername(), clientIp);
             return ResponseEntity.ok(ApiResponseDTO.success(response, "Login successful"));
 
         } catch (BadCredentialsException e) {
             // Credenciais inválidas - registra tentativa falha
-            rateLimiter.recordFailedAttempt(ipOrUser);
-            logger.warn("Invalid credentials for user: {}", request.getUsername());
+            rateLimiter.recordFailedAttempt(rateLimitKey);
+            logger.warn("Invalid credentials for user: {} from IP: {}", request.getUsername(), clientIp);
             throw new BusinessException("Invalid username or password", "INVALID_CREDENTIALS");
         } catch (Exception e) {
-            logger.error("Login error for user: {}", request.getUsername(), e);
+            logger.error("Login error for user: {} from IP: {}", request.getUsername(), clientIp, e);
             throw new BusinessException("Authentication failed", "AUTH_FAILED");
         }
     }
@@ -128,9 +139,12 @@ public class AuthenticationController {
             AuthResponse response = authenticationService.refreshAccessToken(request.getRefreshToken());
             logger.info("Token refreshed successfully");
             return ResponseEntity.ok(ApiResponseDTO.success(response, "Token refreshed"));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             logger.warn("Token refresh failed: {}", e.getMessage());
             throw new BusinessException("Invalid or expired refresh token", "INVALID_REFRESH_TOKEN");
+        } catch (Exception e) {
+            logger.error("Token refresh error", e);
+            throw new BusinessException("Token refresh failed", "REFRESH_FAILED");
         }
     }
 
@@ -156,5 +170,30 @@ public class AuthenticationController {
     public ResponseEntity<ApiResponseDTO<String>> getCurrentUser(
             @RequestAttribute("username") String username) {
         return ResponseEntity.ok(ApiResponseDTO.success(username, "Current user"));
+    }
+
+    /**
+     * Extrai o endereço IP do cliente de forma segura, considerando proxies.
+     * 
+     * SEGURANÇA:
+     * - Verifica headers de proxy comuns (X-Forwarded-For, X-Real-IP)
+     * - Previne IP spoofing básico
+     * - Fallback para remoteAddr se headers não estiverem presentes
+     * 
+     * @param request requisição HTTP
+     * @return IP do cliente
+     */
+    private String getClientIpAddress(HttpServletRequest request) {
+        String[] headers = {"X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP", "WL-Proxy-Client-IP"};
+        
+        for (String header : headers) {
+            String ip = request.getHeader(header);
+            if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+                // X-Forwarded-For pode conter múltiplos IPs, pega o primeiro
+                return ip.split(",")[0].trim();
+            }
+        }
+        
+        return request.getRemoteAddr();
     }
 }

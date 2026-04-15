@@ -19,8 +19,9 @@ import java.util.function.Function;
 /**
  * Componente para geração e validação de tokens JWT.
  * 
- * Segurança:
- * - Usa HS256 com chave secreta de 256 bits
+ * SEGURANÇA:
+ * - Chave secreta DEVE ser configurada via variável de ambiente JWT_SECRET
+ * - Mínimo de 256 bits (32 caracteres) para HS256
  * - Tokens expiram em 1 hora por padrão
  * - Refresh tokens expiram em 24 horas
  * 
@@ -30,6 +31,7 @@ import java.util.function.Function;
 public class JwtTokenProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
+    private static final int MIN_SECRET_LENGTH = 32; // 256 bits
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -47,6 +49,39 @@ public class JwtTokenProvider {
     private String jwtAudience;
 
     /**
+     * Valida a configuração da chave secreta na inicialização.
+     * 
+     * @throws IllegalStateException se a chave não estiver configurada ou for muito curta
+     */
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        if (jwtSecret == null || jwtSecret.trim().isEmpty()) {
+            throw new IllegalStateException(
+                "JWT_SECRET is not configured. Please set JWT_SECRET environment variable with at least 32 characters."
+            );
+        }
+        
+        if (jwtSecret.length() < MIN_SECRET_LENGTH) {
+            throw new IllegalStateException(
+                String.format(
+                    "JWT_SECRET must be at least %d characters long for HS256. Current length: %d",
+                    MIN_SECRET_LENGTH,
+                    jwtSecret.length()
+                )
+            );
+        }
+        
+        // Verifica se está usando o valor padrão inseguro
+        if (jwtSecret.contains("change-this-secret") || jwtSecret.contains("change_me")) {
+            throw new IllegalStateException(
+                "Insecure default JWT_SECRET detected. Please set a secure JWT_SECRET environment variable."
+            );
+        }
+        
+        logger.info("JWT configuration validated successfully");
+    }
+
+    /**
      * Gera a chave secreta a partir da configuração.
      * A chave deve ter pelo menos 256 bits para HS256.
      */
@@ -59,7 +94,7 @@ public class JwtTokenProvider {
      * Gera um token de acesso para o usuário.
      * 
      * @param username nome do usuário
-     * @param roles    lista de roles/papéis
+     * @param claims   claims adicionais (roles, etc.)
      * @return token JWT
      */
     public String generateAccessToken(String username, Map<String, Object> claims) {
