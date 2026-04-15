@@ -49,7 +49,7 @@ class CorrelationIdFilterTest {
         // Arrange
         String existingCorrelationId = "test-correlation-id-12345";
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setHeader(CorrelationIdFilter.CORRELATION_ID_HEADER, existingCorrelationId);
+        request.addHeader(CorrelationIdFilter.CORRELATION_ID_HEADER, existingCorrelationId);
         
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain filterChain = new MockFilterChain();
@@ -82,7 +82,7 @@ class CorrelationIdFilterTest {
     void shouldHandleBlankCorrelationIdAsNotPresent() throws Exception {
         // Arrange
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setHeader(CorrelationIdFilter.CORRELATION_ID_HEADER, "   ");
+        request.addHeader(CorrelationIdFilter.CORRELATION_ID_HEADER, "   ");
         
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain filterChain = new MockFilterChain();
