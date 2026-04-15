@@ -1,70 +1,126 @@
-# Compiled and build artifacts
-*.class
-*.o
-*.obj
-*.out
-*.exe
-*.dll
-*.so
-*.a
+```
+# Configuration files
+config/
 
-# Maven
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
-
-# Gradle
-.gradle/
-build/
-
-# IDEs
-.vscode/
-.idea/
-*.iml
-*.ipr
-*.iws
-
-# Environment and secrets
+# Environment files
 .env
 .env.local
-.env.*.local
-*.env.*
-application-local.yml
-application-local.properties
+.env.*
 
-# Logs and temp files
-*.log
-*.tmp
+# Dependencies
+node_modules/
+**/node_modules/
+lib/
+vendor/
+
+# Build artifacts
+dist/
+build/
+target/
+out/
+bin/
+obj/
+
+# Package manager caches
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE files
+.vscode/
+.idea/
 *.swp
 *.swo
 *~
 
 # OS files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# Testing
+# Logs
+*.log
+
+# Coverage reports
 coverage/
 htmlcov/
 .coverage
-jacoco/
+*.coverage
 
-# Compressed files (project artifacts)
-*.zip
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.eggs/
+eggs/
+*.egg-info/
+.Python-version
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.tox.ini
+noxfile.py
+.hypothesis/
+
+# Java specific
+*.class
+*.jar
+*.war
+*.ear
 *.tar.gz
-*.rar
+target/
+.gradle/
+!gradle/
+!gradlew
+!gradlew.bat
+.DS_Store
+.settings/
+*.iws
+*.iml
+*.ipr
+nbproject/
+nbbuild/
+nbdist/
+nbreleases/
+*.nbbak
+build/
+dist/
+javadoc/
+test-output/
+*.launch
+.classpath
+.project
+.metadata
+bin/
+gen/
+local.properties
+proguard/
+lint/
+ant-build/
+build.xml
+ivy.xml
+ivysettings.xml
+lib/
+libs/
+*.properties
+!src/main/resources/application*.properties
 
-# Spring Boot
-spring-boot-*.log
+# Node.js specific
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.jscsrc
+.jshintrc
+.npmignore
+.nyc_output
+coverage/
+.nyc_output/
+istanbul.yml
+.mocha.opts
+.travis.yml
+circle.yml
+appveyor.yml
+```
