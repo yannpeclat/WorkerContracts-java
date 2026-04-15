@@ -38,6 +38,7 @@ import java.util.List;
 public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CorrelationIdFilter correlationIdFilter;
     
     @Value("${cors.allowed-origins:http://localhost:3000}")
     private String allowedOrigins;
@@ -57,8 +58,10 @@ public class WebSecurityConfig {
     @Value("${spring.profiles.active:dev}")
     private String activeProfile;
 
-    public WebSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public WebSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                             CorrelationIdFilter correlationIdFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.correlationIdFilter = correlationIdFilter;
     }
 
     @Bean
@@ -99,7 +102,9 @@ public class WebSecurityConfig {
             )
             
             // Adiciona filtro JWT antes do filtro de autenticação
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            // Adiciona filtro de Correlation ID antes do filtro JWT
+            .addFilterBefore(correlationIdFilter, JwtAuthenticationFilter.class);
         
         // Headers de segurança
         http.headers(headers -> headers

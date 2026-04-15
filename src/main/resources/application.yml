@@ -113,11 +113,42 @@ cors:
 # ===========================================
 # LOGGING
 # ===========================================
-# Logs sem expor dados sensíveis (PII)
+# Logs estruturados em JSON com Correlation ID
 logging:
   level:
     root: ${LOG_LEVEL_ROOT:INFO}
     com.hrms: ${LOG_LEVEL_APP:DEBUG}
     org.springframework.security: ${LOG_LEVEL_SECURITY:INFO}
+    org.springframework.web: ${LOG_LEVEL_WEB:INFO}
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics,mappings,env,loggers
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        all: true
+    enable:
+      jvm: true
+      http: true
+      db: true
+
+# Retry Configuration
+spring:
+  retry:
+    enabled: true
