@@ -1,31 +1,35 @@
 ```
-# Compiled Java class files
+# Java/Maven
+target/
 *.class
+*.jar
+*.war
+*.ear
 
-# Build artifacts directory
-bin/
-
-# Dependencies
-lib/
-libs/
-vendor/
-
-# IDE files
+# IDE
 .idea/
 *.iml
 *.ipr
 *.iws
 
-# Logs
-*.log
-
-# Environment files
+# Environment
 .env
 .env.local
 *.env.*
+
+# Logs
+*.log
 
 # Temporary files
 *.tmp
 *.temp
 *~
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+.mvn/
 ```
