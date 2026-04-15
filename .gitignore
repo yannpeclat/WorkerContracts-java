@@ -1,0 +1,62 @@
+--- .gitignore (原始)
+```
+# Maven build artifacts
+target/
+# Compiled classes
+target/classes/
+# Maven status
+target/maven-status/
+# Test reports
+target/surefire-reports/
+```
+
++++ .gitignore (修改后)
+```
+# Java/Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Coverage
+coverage/
+*.coverage
+.htmlcov/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build system
+.gradle/
+build/
+dist/
+
+# Python (if any mixed)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+```
