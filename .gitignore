@@ -1,126 +1,42 @@
 ```
-# Configuration files
-config/
-
-# Environment files
-.env
-.env.local
-.env.*
-
-# Dependencies
-node_modules/
-**/node_modules/
-lib/
-vendor/
-
-# Build artifacts
-dist/
-build/
+# Java/Maven specific
 target/
-out/
-bin/
-obj/
-
-# Package manager caches
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-*.coverage
-
-# Python specific
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
-.eggs/
-eggs/
-*.egg-info/
-.Python-version
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.tox.ini
-noxfile.py
-.hypothesis/
-
-# Java specific
 *.class
 *.jar
 *.war
 *.ear
+*.zip
 *.tar.gz
-target/
-.gradle/
-!gradle/
-!gradlew
-!gradlew.bat
-.DS_Store
-.settings/
-*.iws
-*.iml
-*.ipr
-nbproject/
-nbbuild/
-nbdist/
-nbreleases/
-*.nbbak
-build/
-dist/
-javadoc/
-test-output/
-*.launch
-.classpath
-.project
-.metadata
-bin/
-gen/
-local.properties
-proguard/
-lint/
-ant-build/
-build.xml
-ivy.xml
-ivysettings.xml
+
+# Dependencies
 lib/
 libs/
-*.properties
-!src/main/resources/application*.properties
 
-# Node.js specific
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.jscsrc
-.jshintrc
-.npmignore
-.nyc_output
-coverage/
-.nyc_output/
-istanbul.yml
-.mocha.opts
-.travis.yml
-circle.yml
-appveyor.yml
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build system
+.mvn/
+mvnw
+mvnw.cmd
+
+# Testing
+test-results/
 ```
