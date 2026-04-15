@@ -95,7 +95,7 @@ class EmployeeServiceTest {
             BusinessException.class,
             () -> employeeService.create(requestDTO)
         );
-        assertEquals("CPF_ALREADY_EXISTS", exception.getErrorCode());
+        assertEquals("CPF_ALREADY_EXISTS", exception.getCode());
     }
 
     @Test
@@ -109,7 +109,7 @@ class EmployeeServiceTest {
             BusinessException.class,
             () -> employeeService.create(requestDTO)
         );
-        assertEquals("EMAIL_ALREADY_EXISTS", exception.getErrorCode());
+        assertEquals("EMAIL_ALREADY_EXISTS", exception.getCode());
     }
 
     @Test
@@ -156,7 +156,7 @@ class EmployeeServiceTest {
 
     @Test
     void shouldRetryOnLockException() {
-        // Arrange
+        // Arrange - Simula falha de lock nas primeiras 2 tentativas, sucesso na 3ª
         when(employeeRepository.findByCpfWithPessimisticLock(anyString()))
                 .thenThrow(new CannotAcquireLockException("Lock acquisition failed"))
                 .thenThrow(new CannotAcquireLockException("Lock acquisition failed"))
@@ -165,12 +165,13 @@ class EmployeeServiceTest {
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
         when(employeeRepository.findAll()).thenReturn(java.util.List.of(employee));
 
-        // Act
+        // Act - O retry deve tentar 3 vezes antes de succeed
         EmployeeResponseDTO response = employeeService.create(requestDTO);
 
-        // Assert
+        // Assert - Verifica que o método foi chamado 3 vezes (retry funcionou)
         assertNotNull(response);
         verify(employeeRepository, times(3)).findByCpfWithPessimisticLock(anyString());
+        verify(employeeRepository, times(1)).save(any(Employee.class));
     }
 
     @Test
@@ -188,6 +189,6 @@ class EmployeeServiceTest {
             BusinessException.class,
             () -> employeeService.create(underageRequest)
         );
-        assertEquals("INVALID_AGE", exception.getErrorCode());
+        assertEquals("INVALID_AGE", exception.getCode());
     }
 }
