@@ -1,8 +1,26 @@
 ```
-# Dependencies
+# Compiled and build artifacts
+*.class
+*.o
+*.obj
+*.out
 target/
 
-# IDE files
+# Dependencies
+.m2/
+.gradle/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
 .vscode/
 .idea/
 *.swp
@@ -12,38 +30,14 @@ target/
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-
-# Environment
-.env
-.env.local
-*.env.*
-
-# Compiled Java files
-*.class
-*.jar
-*.war
-
-# Maven/Gradle build artifacts
-target/
-build/
-.gradle/
-
-# Python cache (if any Python files exist in the project)
-__pycache__/
-*.pyc
-*.pyo
-
-# Node.js (if any JavaScript/Node files exist in the project)
-node_modules/
-
 # Coverage reports
 coverage/
 htmlcov/
-*.coverage
+.coverage
 
-# Temporary files
-*.tmp
-*.temp
+# Maven specific
+*.jar
+*.war
+*.ear
+bin/
 ```

@@ -1,7 +1,3 @@
---- src/main/resources/application.yml (原始)
-
-
-+++ src/main/resources/application.yml (修改后)
 spring:
   application:
     name: hr-management-system

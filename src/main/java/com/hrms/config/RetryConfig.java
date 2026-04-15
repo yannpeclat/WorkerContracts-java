@@ -1,7 +1,3 @@
---- src/main/java/com/hrms/config/RetryConfig.java (原始)
-
-
-+++ src/main/java/com/hrms/config/RetryConfig.java (修改后)
 package com.hrms.config;
 
 import org.springframework.context.annotation.Bean;

@@ -1,7 +1,3 @@
---- src/main/java/com/hrms/repository/EmployeeRepository.java (原始)
-
-
-+++ src/main/java/com/hrms/repository/EmployeeRepository.java (修改后)
 package com.hrms.repository;
 
 import com.hrms.entity.Employee;

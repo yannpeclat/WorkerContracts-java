@@ -1,7 +1,3 @@
---- src/main/java/com/hrms/controller/AuthenticationController.java (原始)
-
-
-+++ src/main/java/com/hrms/controller/AuthenticationController.java (修改后)
 package com.hrms.controller;
 
 import com.hrms.dto.LoginRequest;
@@ -43,22 +39,15 @@ public class AuthenticationController {
         String accessToken = jwtTokenProvider.generateAccessToken(authentication);
         String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
 
-        var userInfo = LoginResponse.UserInfo.builder()
-                .id(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"))
+        LoginResponse response = LoginResponse.builder()
+                .token(accessToken)
+                .refreshToken(refreshToken)
                 .username(authentication.getName())
-                .email("")
                 .role(authentication.getAuthorities().stream()
                         .findFirst()
                         .map(a -> a.getAuthority().replace("ROLE_", ""))
                         .orElse("USER"))
-                .build();
-
-        LoginResponse response = LoginResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .tokenType("Bearer")
                 .expiresIn(86400000L)
-                .user(userInfo)
                 .build();
 
         log.info("User {} authenticated successfully", request.getUsername());

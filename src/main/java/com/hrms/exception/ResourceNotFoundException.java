@@ -1,7 +1,3 @@
---- src/main/java/com/hrms/exception/ResourceNotFoundException.java (原始)
-
-
-+++ src/main/java/com/hrms/exception/ResourceNotFoundException.java (修改后)
 package com.hrms.exception;
 
 import org.springframework.http.HttpStatus;
