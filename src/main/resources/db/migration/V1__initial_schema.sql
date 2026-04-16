@@ -1,7 +1,6 @@
 --- src/main/resources/db/migration/V1__initial_schema.sql (原始)
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-
-+++ src/main/resources/db/migration/V1__initial_schema.sql (修改后)
 -- Create employees table
 CREATE TABLE employees (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -98,7 +97,7 @@ VALUES (
     'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
     'admin',
     'admin@hrms.com',
-    '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.G.2I.l.L.L.L.L',
+    '$2a$15$CuYHXPKUTv7tQlpgqjAryOfo7jEa7bxy5ApPe676Y820Fch5JIvOO',
     'ADMIN',
     true
 );
