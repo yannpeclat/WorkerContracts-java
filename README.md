@@ -768,7 +768,7 @@ scrape_configs:
 
 | Username | Password   | Role |
 |----------|------------|------|
-| `admin` | `password` | ADMIN |
+| `admin` | `admin123` | ADMIN |
 
 > ⚠️ **WARNING**: Change default credentials immediately in production!
 
